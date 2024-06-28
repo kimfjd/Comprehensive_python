@@ -1,0 +1,35 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
+import requests
+
+app = Flask(__name__)
+CORS(app, supports_credentials=True)  # 모든 도메인에서의 요청을 허용하고, credentials 지원
+
+@app.route('/api/iamport/getToken', methods=['POST'])
+def get_token():
+    url = "https://api.iamport.kr/users/getToken"
+    payload = {
+        "imp_key": "6441713254138051",
+        "imp_secret": "y05rJjyDEsXLg78LiYn0e6XnbqcyzSS4LYfhf7P1MQqCx4s8O1Vpcsm0QUqqzKbU4wKhSFpezSdMaNB2"
+    }
+    headers = {"Content-Type": "application/json"}
+
+    response = requests.post(url, json=payload, headers=headers)
+    return jsonify(response.json()), response.status_code
+
+@app.route('/api/iamport/schedulePayment', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def schedule_payment():
+    schedule_data = request.get_json()
+
+    url = "https://api.iamport.kr/subscribe/payments/schedule"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": request.headers.get('Authorization')
+    }
+
+    response = requests.post(url, json=schedule_data, headers=headers)
+    return jsonify(response.json()), response.status_code
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
