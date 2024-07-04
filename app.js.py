@@ -17,7 +17,7 @@ def get_token():
     response = requests.post(url, json=payload, headers=headers)
     return jsonify(response.json()), response.status_code
 
-@app.route('/api/iamport/schedulePayment', methods=['POST'])
+@app.route('/api/iamport/schedulePayment', methods=['POST','OPTIONS'])
 @cross_origin(supports_credentials=True)
 def schedule_payment():
     schedule_data = request.get_json()
@@ -31,5 +31,26 @@ def schedule_payment():
     response = requests.post(url, json=schedule_data, headers=headers)
     return jsonify(response.json()), response.status_code
 
+@app.route('/api/iamport/unschedulePayment', methods=['POST', 'OPTIONS'])
+@cross_origin(supports_credentials=True)
+def unschedule_payment():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    customer_uid = request.json.get("customer_uid")
+    merchant_uid = request.json.get("merchant_uid")
+
+    url = "https://api.iamport.kr/subscribe/payments/unschedule"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": request.headers.get('Authorization')
+    }
+    payload = {"customer_uid": customer_uid, "merchant_uid": merchant_uid}  # merchant_uid 추가
+
+    response = requests.post(url, json=payload, headers=headers)
+    return jsonify(response.json()), response.status_code
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
+
