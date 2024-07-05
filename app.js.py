@@ -50,6 +50,28 @@ def unschedule_payment():
     response = requests.post(url, json=payload, headers=headers)
     return jsonify(response.json()), response.status_code
 
+@app.route('/api/iamport/preparePayment', methods=['POST', 'OPTIONS'])
+@cross_origin(supports_credentials=True)
+def prepare_payment():
+    if request.method == 'OPTIONS':
+        return '', 200
+
+    merchant_uid = request.json.get("merchant_uid")
+    amount = request.json.get("amount")
+
+    url = "https://api.iamport.kr/payments/prepare"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": request.headers.get('Authorization')
+    }
+    payload = {
+        "merchant_uid": merchant_uid,
+        "amount": amount
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    return jsonify(response.json()), response.status_code
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
 
