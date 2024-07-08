@@ -111,6 +111,32 @@ def verify_payment():
     else:
         return jsonify({'error': 'Failed to verify payment'}), response.status_code
 
+@app.route('/api/iamport/cancelPayment', methods=['POST'])
+def cancel_payment():
+    imp_uid = request.json.get('imp_uid')
+    iamport_token = request.headers.get('Authorization')
+
+    url = "https://api.iamport.kr/payments/cancel"
+    payload = {
+        "imp_uid": imp_uid
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {iamport_token}"
+    }
+
+    try:
+        response = requests.post(url, json=payload, headers=headers)
+        response.raise_for_status()  # HTTP 오류 발생 시 예외 처리
+
+        if response.status_code == 200:
+            return jsonify(response.json())
+        else:
+            return jsonify({'error': 'Failed to cancel payment'}), response.status_code
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': str(e)}), 500  # 예기치 못한 오류 발생 시 처리
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
 
