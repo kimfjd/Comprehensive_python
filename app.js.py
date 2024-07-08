@@ -93,11 +93,28 @@ def reschedule_payment():
     response = requests.post(url, json=payload, headers=headers)
     return jsonify(response.json()), response.status_code
 
+@app.route('/api/iamport/verifyPayment', methods=['POST'])
+def verify_payment():
+    imp_uid = request.json.get('imp_uid')
+    iamport_token = request.headers.get('Authorization')
+
+    url = f"https://api.iamport.kr/payments/{imp_uid}"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {iamport_token}"
+    }
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({'error': 'Failed to verify payment'}), response.status_code
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
 
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+
 
 
