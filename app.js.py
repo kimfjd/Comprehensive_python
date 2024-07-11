@@ -192,6 +192,7 @@ def iamport_webhook():
             amount = payment_data.get('amount')
             customer_uid = payment_data.get('customer_uid')
             merchant_uid = payment_data.get('merchant_uid')
+            pg_provider = payment_data.get('pg_provider')  # pg_provider 값을 가져옵니다.
             today_date = datetime.datetime.now().isoformat()  # 오늘 날짜
             next_schedule_at = int((datetime.datetime.now() + datetime.timedelta(days=30)).timestamp())  # 금일 날짜로 부터 한달뒤 시간을 유닉스 타임스템프 시간으로 변경
             next_schedule_at_local = datetime.datetime.fromtimestamp(next_schedule_at).isoformat()  # 위 유닉스 타임 스템프 시간을 로컬타입으로 변경
@@ -266,6 +267,7 @@ def iamport_webhook():
                         f"Failed to send subscription data to Java backend: {save_subscription_response.text}")
                     return jsonify({"message": "Failed to send subscription data to Java backend"}), 500
 
+
                 # 결제 내역 저장 부분
                 paymenthistory_data = {
                     'member': customer_uid,  # buyer_email
@@ -280,19 +282,36 @@ def iamport_webhook():
 
                 save_paymenthistory_response = requests.post(
                     'http://localhost:8118/payments/save',
-                    json=paymenthistory_data  # subscription_data 대신 paymenthistory_data 사용
+                    json=paymenthistory_data
                 )
 
                 app.logger.info(f"Java backend response status: {save_paymenthistory_response.status_code}")
                 app.logger.info(f"Java backend response body: {save_paymenthistory_response.text}")
 
-                if save_paymenthistory_response.status_code == 200:  # save_subscription_response 대신 save_paymenthistory_response 사용
-                    app.logger.info("paymenthistory data sent to Java backend successfully")
-                    return jsonify({"message": "paymenthistory data sent to Java backend successfully"}), 200
+
+                paymentinfo_data= {
+                    'email': customer_uid,
+                    'paymentMethodCode': pg_provider,
+                    'paymentDetails': imp_uid + str(amount) + today_date
+                }
+
+                app.logger.info(f"paymentinfo Java backend: {paymentinfo_data}")
+
+                save_paymentinfo_response = requests.post(
+                    'http://localhost:8118/payments/info',
+                    json=paymentinfo_data
+                )
+
+                app.logger.info(f"Java backend response status: {save_paymentinfo_response.status_code}")
+                app.logger.info(f"Java backend response body: {save_paymentinfo_response.text}")
+
+                if save_paymentinfo_response.status_code == 200:
+                    app.logger.info("paymentinfo data sent to Java backend successfully")
+                    return jsonify({"message": "paymentinfo data sent to Java backend successfully"}), 200
                 else:
                     app.logger.error(
-                        f"Failed to send paymenthistory data to Java backend: {save_paymenthistory_response.text}")
-                    return jsonify({"message": "Failed to send paymenthistory data to Java backend"}), 500
+                        f"Failed to send paymentinfo data to Java backend: {save_paymentinfo_response.text}")
+                    return jsonify({"message": "Failed to send paymentinfo data to Java backend"}), 500
         else:
             app.logger.error("Failed to verify payment")
             return jsonify({"message": "Failed to verify payment"}), 500
