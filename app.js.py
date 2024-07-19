@@ -168,7 +168,7 @@ def iamport_webhook():
 
         # 토큰
         token_response = requests.post(
-            'http://localhost:5000/api/iamport/getToken'
+            'http://apueda.shop/api/iamport/getToken'
         )
 
         if token_response.status_code == 200:
@@ -180,7 +180,7 @@ def iamport_webhook():
 
         # 사후검증(결제 단건 조회)
         verify_response = requests.post(
-            'http://localhost:5000/api/iamport/verifyPayment',
+            'http://apueda.shop/api/iamport/verifyPayment',
             json={'imp_uid': imp_uid},
             headers={'Authorization': access_token}
         )
@@ -200,7 +200,7 @@ def iamport_webhook():
             if amount != 10:
                 # Cancel payment
                 cancel_response = requests.post(
-                    'http://localhost:5000/api/iamport/cancelPayment',
+                    'http://apueda.shop/api/iamport/cancelPayment',
                     json={'imp_uid': imp_uid},
                     headers={'Authorization': access_token}
                 )
@@ -226,7 +226,7 @@ def iamport_webhook():
                 }
 
                 schedule_response = requests.post(
-                    'http://localhost:5000/api/iamport/schedulePayment',
+                    'http://apueda.shop/api/iamport/schedulePayment',
                     json=schedule_data,
                     headers={'Authorization': access_token}
                 )
@@ -244,7 +244,7 @@ def iamport_webhook():
                     'paymentDate': today_date,
                     'createdAt': today_date,
                     'validUntil': next_schedule_at_local,
-                    'merchantuid': merchant_uid,
+                    'merchantuid': next_merchant_uid,
                     'customerUid': customer_uid,
                     'status': '구독',
                     'billingKeyCreatedAt': today_date
@@ -321,7 +321,7 @@ def iamport_webhook():
         return jsonify({'success': False, 'message': f"Unexpected error: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)
 
 
 
