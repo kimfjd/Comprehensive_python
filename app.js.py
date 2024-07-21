@@ -6,12 +6,12 @@ import datetime
 app = Flask(__name__)
 CORS(app, supports_credentials=True)  # 모든 도메인에서의 요청을 허용하고, credentials 지원
 
-# 포트원의 IP 주소
-allowed_ips = ["52.78.100.19", "52.78.48.223", "52.78.5.241", "127.0.0.1"]
-
-# IP 주소 확인 함수
-def is_allowed_ip(remote_addr):
-    return remote_addr in allowed_ips
+## 포트원의 IP 주소
+# allowed_ips = ["52.78.100.19", "52.78.48.223", "52.78.5.241", "127.0.0.1"]
+#
+# # IP 주소 확인 함수
+# def is_allowed_ip(remote_addr):
+#     return remote_addr in allowed_ips
 
 # 토큰 받기
 @app.route('/api/iamport/getToken', methods=['POST'])
@@ -322,8 +322,3 @@ def iamport_webhook():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
