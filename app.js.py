@@ -4,7 +4,7 @@ import requests
 import datetime
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)  # 모든 도메인에서의 요청을 허용하고, credentials 지원
+CORS(app, resources={r"/*": {"origins": "*"}})  # 모든 도메인에서의 요청을 허용
 
 ## 포트원의 IP 주소
 # allowed_ips = ["52.78.100.19", "52.78.48.223", "52.78.5.241", "127.0.0.1"]
