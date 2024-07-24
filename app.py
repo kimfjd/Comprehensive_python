@@ -184,7 +184,7 @@ def iamport_webhook():
 
         # 토큰
         token_response = requests.post(
-            'http://localhost:5000/api/iamport/getToken'
+            '/api/iamport/getToken'
         )
 
         if token_response.status_code == 200:
@@ -196,7 +196,7 @@ def iamport_webhook():
 
         # 사후검증(결제 단건 조회)
         verify_response = requests.post(
-            'http://localhost:5000/api/iamport/verifyPayment',
+            '/api/iamport/verifyPayment',
             json={'imp_uid': imp_uid},
             headers={'Authorization': access_token}
         )
@@ -216,7 +216,7 @@ def iamport_webhook():
             if amount != 10:
                 # Cancel payment
                 cancel_response = requests.post(
-                    'http://localhost:5000/api/iamport/cancelPayment',
+                    '/api/iamport/cancelPayment',
                     json={'imp_uid': imp_uid},
                     headers={'Authorization': access_token}
                 )
@@ -242,7 +242,7 @@ def iamport_webhook():
                 }
 
                 schedule_response = requests.post(
-                    'http://localhost:5000/api/iamport/schedulePayment',
+                    '/api/iamport/schedulePayment',
                     json=schedule_data,
                     headers={'Authorization': access_token}
                 )
