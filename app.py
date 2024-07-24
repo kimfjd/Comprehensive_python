@@ -242,7 +242,7 @@ def iamport_webhook():
                 }
 
                 schedule_response = requests.post(
-                    'hhttp://localhost:5000/api/iamport/schedulePayment',
+                    'http://localhost:5000/api/iamport/schedulePayment',
                     json=schedule_data,
                     headers={'Authorization': access_token}
                 )
@@ -269,7 +269,7 @@ def iamport_webhook():
                 app.logger.info(f"Sending subscription data to Java backend: {subscription_data}")
 
                 save_subscription_response = requests.post(
-                    'https://www.apueda.shop/payments/subscriptions',  # 프로토콜을 포함한 URL
+                    'http://localhost:8118/payments/subscriptions',  # 프로토콜을 포함한 URL
                     json=subscription_data
                 )
 
@@ -297,7 +297,7 @@ def iamport_webhook():
                 app.logger.info(f"paymenthistory Java backend: {paymenthistory_data}")
 
                 save_paymenthistory_response = requests.post(
-                    'https://www.apueda.shop/payments/save',
+                    'http://localhost:8118/payments/save',
                     json=paymenthistory_data
                 )
 
@@ -314,7 +314,7 @@ def iamport_webhook():
                 app.logger.info(f"paymentinfo Java backend: {paymentinfo_data}")
 
                 save_paymentinfo_response = requests.post(
-                    'https://www.apueda.shop/payments/info',
+                    'http://localhost:8118/payments/info',
                     json=paymentinfo_data
                 )
 
