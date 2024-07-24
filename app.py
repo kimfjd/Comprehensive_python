@@ -184,7 +184,7 @@ def iamport_webhook():
 
         # 토큰
         token_response = requests.post(
-            'https://www.apueda.shop/api/iamport/getToken'
+            'http://localhost:5000/api/iamport/getToken'
         )
 
         if token_response.status_code == 200:
@@ -196,7 +196,7 @@ def iamport_webhook():
 
         # 사후검증(결제 단건 조회)
         verify_response = requests.post(
-            'https://www.apueda.shop/api/iamport/verifyPayment',
+            'http://localhost:5000/api/iamport/verifyPayment',
             json={'imp_uid': imp_uid},
             headers={'Authorization': access_token}
         )
@@ -216,7 +216,7 @@ def iamport_webhook():
             if amount != 10:
                 # Cancel payment
                 cancel_response = requests.post(
-                    'https://www.apueda.shop/api/iamport/cancelPayment',
+                    'http://localhost:5000/api/iamport/cancelPayment',
                     json={'imp_uid': imp_uid},
                     headers={'Authorization': access_token}
                 )
@@ -242,7 +242,7 @@ def iamport_webhook():
                 }
 
                 schedule_response = requests.post(
-                    'https://www.apueda.shop/api/iamport/schedulePayment',
+                    'hhttp://localhost:5000/api/iamport/schedulePayment',
                     json=schedule_data,
                     headers={'Authorization': access_token}
                 )
@@ -269,7 +269,7 @@ def iamport_webhook():
                 app.logger.info(f"Sending subscription data to Java backend: {subscription_data}")
 
                 save_subscription_response = requests.post(
-                    'http://localhost:8118/payments/subscriptions',  # 프로토콜을 포함한 URL
+                    'https://www.apueda.shop/payments/subscriptions',  # 프로토콜을 포함한 URL
                     json=subscription_data
                 )
 
@@ -297,7 +297,7 @@ def iamport_webhook():
                 app.logger.info(f"paymenthistory Java backend: {paymenthistory_data}")
 
                 save_paymenthistory_response = requests.post(
-                    'http://localhost:8118/payments/save',
+                    'https://www.apueda.shop/payments/save',
                     json=paymenthistory_data
                 )
 
@@ -314,7 +314,7 @@ def iamport_webhook():
                 app.logger.info(f"paymentinfo Java backend: {paymentinfo_data}")
 
                 save_paymentinfo_response = requests.post(
-                    'http://localhost:8118/payments/info',
+                    'https://www.apueda.shop/payments/info',
                     json=paymentinfo_data
                 )
 
