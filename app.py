@@ -2,8 +2,22 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS, cross_origin
 import requests
 import datetime
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__)
+# 로깅 설정
+log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+log_file = '/var/log/iamport_webhook.log'
+
+# 파일 핸들러 설정
+file_handler = RotatingFileHandler(log_file, maxBytes=1000000, backupCount=3)
+file_handler.setFormatter(log_formatter)
+file_handler.setLevel(logging.DEBUG)
+
+# 로거에 핸들러 추가
+app.logger.addHandler(file_handler)
+app.logger.setLevel(logging.DEBUG)
 # CORS(app, resources={r"/*": {"origins": "*"}})  # 모든 도메인에서의 요청을 허용
 CORS(app, resources={r"/*": {"origins": "*", "supports_credentials": True}})
 
@@ -186,6 +200,8 @@ def iamport_webhook():
         token_response = requests.post(
             'https://www.apueda.shop/api/iamport/getToken'
         )
+        app.logger.debug(f'토큰 상태: {token_response.status_code}')
+        app.logger.debug(f'토큰 텍스트: {token_response.text}')
 
         if token_response.status_code == 200:
             access_token = token_response.json()['response']['access_token']
@@ -200,6 +216,8 @@ def iamport_webhook():
             json={'imp_uid': imp_uid},
             headers={'Authorization': access_token}
         )
+        app.logger.debug(f'사후검증 status: {verify_response.status_code}')
+        app.logger.debug(f'사후검증 body: {verify_response.text}')
 
         if verify_response.status_code == 200:
             payment_data = verify_response.json()['response']
@@ -246,6 +264,8 @@ def iamport_webhook():
                     json=schedule_data,
                     headers={'Authorization': access_token}
                 )
+                app.logger.debug(f'결제예약 status: {schedule_response.status_code}')
+                app.logger.debug(f'결제예약 body: {schedule_response.text}')
 
                 if schedule_response.status_code == 200:
                     app.logger.info("Payment scheduled successfully")
